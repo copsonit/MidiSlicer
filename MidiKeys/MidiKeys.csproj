@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{95D54CE6-F455-46A0-A7F6-5FA8460C92B8}</ProjectGuid>
+    <ProjectGuid>{B3C4AAAF-54CA-4DBC-B56E-838B42E7C039}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>MidiKeys</RootNamespace>
     <AssemblyName>MidiKeys</AssemblyName>
@@ -79,7 +79,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MidiUI\MidiUI.csproj">
-      <Project>{8b53cd59-5d7e-4624-bbc9-12e88133e52b}</Project>
+      <Project>{48cb7c41-46de-44d4-b501-6db430d00607}</Project>
       <Name>MidiUI</Name>
     </ProjectReference>
   </ItemGroup>

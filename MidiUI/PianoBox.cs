@@ -427,7 +427,8 @@ namespace M
             using (var brush = new SolidBrush(_whiteKeyColor))
                 g.FillRectangle(brush,args.ClipRectangle);
             // there are 7 white keys per octave
-            var whiteKeyCount = 7 * _octaves;
+            //var whiteKeyCount = 7 * _octaves;
+            var whiteKeyCount = Math.Min(7 * 11 - 2, 7 * _octaves);
             int key;
             // first we must paint the highlighted portions
             // TODO: Only paint if it's inside the ClipRectangle
@@ -540,6 +541,12 @@ namespace M
                                     ++key;
                                 }
                             }
+                            {
+                                var i = whiteKeyCount;
+                                var x = i * wkw;
+                                var k = i % 7;
+                                g.DrawLine(pen, x, 1, x, Height - 2);
+                            }
                         }
                         else // vertical
                         {
@@ -632,22 +639,25 @@ namespace M
             if (MouseButtons.Left == e.Button)
             {
                 var ht = _HitTest(e.X, e.Y);
-                if (-1 < _keyDown && ht != _keyDown)
+                if (ht >= 0 && ht <= 127)
                 {
-                    var b = _keys[_keyDown];
-                    if (b)
+                    if (-1 < _keyDown && ht != _keyDown)
                     {
-                        _keys[_keyDown] = false;
-                        OnPianoKeyUp(new PianoKeyEventArgs(_keyDown));
+                        var b = _keys[_keyDown];
+                        if (b)
+                        {
+                            _keys[_keyDown] = false;
+                            OnPianoKeyUp(new PianoKeyEventArgs(_keyDown));
+                        }
+                        _keyDown = ht;
+                        b = _keys[_keyDown];
+                        if (!b)
+                        {
+                            _keys[_keyDown] = true;
+                            OnPianoKeyDown(new PianoKeyEventArgs(_keyDown));
+                        }
+                        Refresh();
                     }
-                    _keyDown = ht;
-                    b = _keys[_keyDown];
-                    if (!b)
-                    {
-                        _keys[_keyDown] = true;
-                        OnPianoKeyDown(new PianoKeyEventArgs(_keyDown));
-                    }
-                    Refresh();
                 }
             }
             
@@ -710,6 +720,7 @@ namespace M
                         result = 0;
                     else if (result >= _octaves * 12)
                         result = _octaves * 12 - 1;
+                    if (result > 127) return -1;
                     return result;
 
                 }
@@ -771,6 +782,7 @@ namespace M
                         result = 0;
                     else if (result >= _octaves * 12)
                         result = _octaves * 12 - 1;
+                    if (result > 127) return -1;
                     return result;
                 }
             }
@@ -808,6 +820,7 @@ namespace M
                         result = 0;
                     else if (result >= _octaves * 12)
                         result = _octaves * 12 - 1;
+                    if (result > 127) return -1;
                     return result;
                 }
                 else
@@ -868,6 +881,7 @@ namespace M
                         result = 0;
                     else if (result >= _octaves * 12)
                         result = _octaves * 12 - 1;
+                    if (result > 127) return -1;
                     return result;
                 }
             }
