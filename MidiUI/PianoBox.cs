@@ -53,9 +53,11 @@ namespace M
         // member stuff
         int _octaves = 1;
         bool[] _keys = new bool[12];
+        int _centerKey = -1;
         int _keyDown = -1;
         Orientation _orientation = Orientation.Horizontal;
         Color _noteHighlightColor = Color.Orange;
+        Color _noteCenterColor = Color.Blue;
         Color _whiteKeyColor = Color.White;
         Color _blackKeyColor = Color.Black;
         Color _borderColor = Color.Black;
@@ -93,6 +95,31 @@ namespace M
                 }
             }
         }
+        /// <summary>
+        /// Indicates the center key number.
+        /// </summary>
+        [Description("Indicates the center key number")]
+        [Category("Behavior")]
+        [DefaultValue(1)]
+        public int CenterKey
+        {
+            get { return _centerKey; }
+            set
+            {
+                if (-1 > value || 127 < value)
+                    throw new ArgumentOutOfRangeException();
+                if (value != _centerKey)
+                {
+                    _centerKey = value;
+                    //var keys = new bool[_octaves * 12];
+                    //Array.Copy(_keys, 0, keys, 0, Math.Min(keys.Length, _keys.Length));
+                    //_keys = keys;
+                    Refresh();
+                    //OnOctavesChanged(EventArgs.Empty);
+                }
+            }
+        }
+
         /// <summary>
         /// Raised when the value of Octaves changes
         /// </summary>
@@ -432,77 +459,80 @@ namespace M
             int key;
             // first we must paint the highlighted portions
             // TODO: Only paint if it's inside the ClipRectangle
-            using (var selBrush = new SolidBrush(_noteHighlightColor))
-            {
-                if (Orientation.Horizontal == _orientation)
+            using (var centerBrush = new SolidBrush(_noteCenterColor)) {
+                using (var selBrush = new SolidBrush(_noteHighlightColor))
                 {
-                    var wkw = Width / whiteKeyCount;
-                    var bkw = unchecked((int)Math.Max(3, wkw * .666666));
-                    key = 0;
-                    var ox = 0;
-                    for (var i = 1; i < whiteKeyCount; ++i)
+                    if (Orientation.Horizontal == _orientation)
                     {
-                        var x = i * wkw;
-                        var k = i % 7;
-                        if (3 != k && 0 != k)
+                        var wkw = Width / whiteKeyCount;
+                        var bkw = unchecked((int)Math.Max(3, wkw * .666666));
+                        key = 0;
+                        var ox = 0;
+                        for (var i = 1; i < whiteKeyCount; ++i)
                         {
-                            if(_keys[key])
-                                g.FillRectangle(selBrush, ox+1, 1, wkw - 1, Height-2);
-                            ++key;
-                            if(_keys[key])
-                                g.FillRectangle(selBrush, x - (bkw / 2) + 1, 1, bkw - 1, unchecked((int)(Height * .666666)));
-                            ++key;
-                            if (_keys[key])
-                                g.FillRectangle(selBrush, x, 1, wkw - 1, Height - 2);
+                            var x = i * wkw;
+                            var k = i % 7;
+                            if (3 != k && 0 != k)
+                            {
+                                if (_keys[key])
+                                    g.FillRectangle(key == _centerKey ? centerBrush : selBrush, ox + 1, 1, wkw - 1, Height - 2);
+                                ++key;
+                                if (_keys[key])
+                                    g.FillRectangle(key == _centerKey ? centerBrush : selBrush, x - (bkw / 2) + 1, 1, bkw - 1, unchecked((int)(Height * .666666)));
+                                ++key;
+                                if (_keys[key])
+                                    g.FillRectangle(key == _centerKey ? centerBrush : selBrush, x, 1, wkw - 1, Height - 2);
+                            }
+                            else
+                            {
+                                if (_keys[key])
+                                    g.FillRectangle(key == _centerKey ? centerBrush : selBrush, ox + 1, 1, wkw - 1, Height - 2);
+                                ++key;
+                                if (_keys[key])
+                                    g.FillRectangle(key == _centerKey ? centerBrush : selBrush, x, 1, wkw - 1, Height - 2);
+                            }
+                            ox = x;
                         }
-                        else
+                        if (_keys[_keys.Length - 1])
                         {
-                            if(_keys[key])
-                                g.FillRectangle(selBrush, ox + 1, 1, wkw - 1, Height - 2);
-                            ++key;
-                            if(_keys[key])
-                                g.FillRectangle(selBrush, x, 1, wkw - 1, Height - 2);
+                            g.FillRectangle(key == _centerKey ? centerBrush : selBrush, ox, 1, Width - ox - 1, Height - 2);
                         }
-                        ox = x;
                     }
-                    if(_keys[_keys.Length-1])
+                    else // vertical 
                     {
-                        g.FillRectangle(selBrush, ox, 1, Width-ox- 1, Height - 2);
-                    }
-                } else // vertical 
-                {
-                    var wkh = Height / whiteKeyCount;
-                    var bkh = unchecked((int)Math.Max(3, wkh * .666666));
-                    key = _keys.Length-1;
-                    var oy = 0;
-                    for (var i = 1; i < whiteKeyCount; ++i)
-                    {
-                        var y = i * wkh;
-                        var k = i % 7;
-                        if (4 != k && 0 != k)
+                        var wkh = Height / whiteKeyCount;
+                        var bkh = unchecked((int)Math.Max(3, wkh * .666666));
+                        key = _keys.Length - 1;
+                        var oy = 0;
+                        for (var i = 1; i < whiteKeyCount; ++i)
                         {
-                            if (_keys[key])
-                                g.FillRectangle(selBrush, 1, oy + 1, Width - 2, wkh - 1);
-                            --key;
-                            if(_keys[key])
-                                g.FillRectangle(selBrush, 1, y - (bkh / 2) + 1, unchecked((int)(Width * .666666)) - 1, bkh - 2);
-                            --key;
-                            if(_keys[key])
-                                g.FillRectangle(selBrush, 1, y , Width - 2, wkh - 1);
+                            var y = i * wkh;
+                            var k = i % 7;
+                            if (4 != k && 0 != k)
+                            {
+                                if (_keys[key])
+                                    g.FillRectangle(key == _centerKey ? centerBrush : selBrush, 1, oy + 1, Width - 2, wkh - 1);
+                                --key;
+                                if (_keys[key])
+                                    g.FillRectangle(key == _centerKey ? centerBrush : selBrush, 1, y - (bkh / 2) + 1, unchecked((int)(Width * .666666)) - 1, bkh - 2);
+                                --key;
+                                if (_keys[key])
+                                    g.FillRectangle(key == _centerKey ? centerBrush : selBrush, 1, y, Width - 2, wkh - 1);
+                            }
+                            else
+                            {
+                                if (_keys[key])
+                                    g.FillRectangle(key == _centerKey ? centerBrush : selBrush, 1, oy + 1, Width - 2, wkh - 1);
+                                --key;
+                                if (_keys[key])
+                                    g.FillRectangle(key == _centerKey ? centerBrush : selBrush, 1, y, Width - 2, wkh - 1);
+                            }
+                            oy = y;
                         }
-                        else
+                        if (_keys[0])
                         {
-                            if (_keys[key])
-                                g.FillRectangle(selBrush, 1, oy + 1, Width - 2, wkh - 1);
-                            --key;
-                            if(_keys[key])
-                                g.FillRectangle(selBrush, 1, y, Width - 2, wkh - 1);
+                            g.FillRectangle(key == _centerKey ? centerBrush : selBrush, 1, oy, Width - 2, Height - oy - 1);
                         }
-                        oy = y; 
-                    }
-                    if (_keys[0])
-                    {
-                        g.FillRectangle(selBrush, 1,oy, Width - 2, Height - oy-1);
                     }
                 }
                 // Now paint the black keys and the borders between keys
