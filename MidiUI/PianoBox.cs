@@ -569,12 +569,7 @@ namespace M
                                     ++key;
                                 }
                             }
-                            {
-                                var i = whiteKeyCount;
-                                var x = i * wkw;
-                                var k = i % 7;
-                                g.DrawLine(pen, x, 1, x, Height - 2);
-                            }
+
                         }
                         else // vertical
                         {
@@ -713,7 +708,7 @@ namespace M
         int _HitTest(int x, int y)
         {
             var result = -1;
-            var whiteKeyCount = 7 * (_octaves -1);
+            var whiteKeyCount = _octaves == 11 ? 70 : 7 * _octaves;
             if (Orientation.Horizontal == Orientation)
             {
                 var wkw = Width / whiteKeyCount;
