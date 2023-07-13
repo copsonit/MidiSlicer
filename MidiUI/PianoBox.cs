@@ -474,21 +474,21 @@ namespace M
                             var k = i % 7;
                             if (3 != k && 0 != k)
                             {
-                                if (_keys[key])
+                                if (_keys[key] || key == _centerKey)
                                     g.FillRectangle(key == _centerKey ? centerBrush : selBrush, ox + 1, 1, wkw - 1, Height - 2);
                                 ++key;
-                                if (_keys[key])
+                                if (_keys[key] || key == _centerKey)
                                     g.FillRectangle(key == _centerKey ? centerBrush : selBrush, x - (bkw / 2) + 1, 1, bkw - 1, unchecked((int)(Height * .666666)));
                                 ++key;
-                                if (_keys[key])
+                                if (_keys[key] || key == _centerKey)
                                     g.FillRectangle(key == _centerKey ? centerBrush : selBrush, x, 1, wkw - 1, Height - 2);
                             }
                             else
                             {
-                                if (_keys[key])
+                                if (_keys[key] || key == _centerKey)
                                     g.FillRectangle(key == _centerKey ? centerBrush : selBrush, ox + 1, 1, wkw - 1, Height - 2);
                                 ++key;
-                                if (_keys[key])
+                                if (_keys[key] || key == _centerKey)
                                     g.FillRectangle(key == _centerKey ? centerBrush : selBrush, x, 1, wkw - 1, Height - 2);
                             }
                             ox = x;
@@ -510,21 +510,21 @@ namespace M
                             var k = i % 7;
                             if (4 != k && 0 != k)
                             {
-                                if (_keys[key])
+                                if (_keys[key] || key == _centerKey)
                                     g.FillRectangle(key == _centerKey ? centerBrush : selBrush, 1, oy + 1, Width - 2, wkh - 1);
                                 --key;
-                                if (_keys[key])
+                                if (_keys[key] || key == _centerKey)
                                     g.FillRectangle(key == _centerKey ? centerBrush : selBrush, 1, y - (bkh / 2) + 1, unchecked((int)(Width * .666666)) - 1, bkh - 2);
                                 --key;
-                                if (_keys[key])
+                                if (_keys[key] || key == _centerKey)
                                     g.FillRectangle(key == _centerKey ? centerBrush : selBrush, 1, y, Width - 2, wkh - 1);
                             }
                             else
                             {
-                                if (_keys[key])
+                                if (_keys[key] || key == _centerKey)
                                     g.FillRectangle(key == _centerKey ? centerBrush : selBrush, 1, oy + 1, Width - 2, wkh - 1);
                                 --key;
-                                if (_keys[key])
+                                if (_keys[key] || key == _centerKey)
                                     g.FillRectangle(key == _centerKey ? centerBrush : selBrush, 1, y, Width - 2, wkh - 1);
                             }
                             oy = y;
@@ -536,6 +536,7 @@ namespace M
                     }
                 }
                 // Now paint the black keys and the borders between keys
+
                 using (var brush = new SolidBrush(_blackKeyColor))
                 {
                     using (var pen = new Pen(_borderColor))
@@ -545,7 +546,7 @@ namespace M
                         {
                             var rect2 = rect;
                             rect2.Inflate(-2, -2);
-                            ControlPaint.DrawFocusRectangle(g,rect2);
+                            ControlPaint.DrawFocusRectangle(g, rect2);
                         }
                         if (Orientation.Horizontal == _orientation)
                         {
@@ -560,8 +561,9 @@ namespace M
                                 {
                                     g.DrawRectangle(pen, x - (bkw / 2), 0, bkw, unchecked((int)(Height * .666666)) + 1);
                                     ++key;
-                                    if (!_keys[key])
-                                        g.FillRectangle(brush, x - (bkw / 2) + 1, 1, bkw - 1, unchecked((int)(Height * .666666)));
+                                    //if (!_keys[key])
+                                        g.FillRectangle(key == _centerKey ? centerBrush : brush, x - (bkw / 2) + 1, 1, bkw - 1, unchecked((int)(Height * .666666)));
+
                                     g.DrawLine(pen, x, 1 + unchecked((int)(Height * .666666)), x, Height - 2);
                                     ++key;
                                 }
@@ -591,8 +593,8 @@ namespace M
                                 {
                                     g.DrawRectangle(pen, 0, y - (bkh / 2), unchecked((int)(Width * .666666)), bkh - 1);
                                     --key;
-                                    if(!_keys[key])
-                                        g.FillRectangle(brush, 1, y - (bkh / 2) + 1, unchecked((int)(Width * .666666)) - 1, bkh - 2);
+                                    //if (!_keys[key])
+                                        g.FillRectangle(key == _centerKey ? centerBrush : brush, 1, y - (bkh / 2) + 1, unchecked((int)(Width * .666666)) - 1, bkh - 2);
                                     g.DrawLine(pen, 1 + unchecked((int)(Width * .666666)), y, Width - 2, y);
                                     --key;
                                 }
@@ -607,7 +609,7 @@ namespace M
                 }
             }
         }
-        
+
         /// <summary>
         /// Called when a key is pressed
         /// </summary>
