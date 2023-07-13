@@ -82,7 +82,7 @@ namespace M
         public int Octaves {
             get { return _octaves; }
             set {
-                if (1 > value || 12 < value)
+                if (1 > value || 11 < value)
                     throw new ArgumentOutOfRangeException();
                 if (value != _octaves)
                 {
@@ -111,11 +111,7 @@ namespace M
                 if (value != _centerKey)
                 {
                     _centerKey = value;
-                    //var keys = new bool[_octaves * 12];
-                    //Array.Copy(_keys, 0, keys, 0, Math.Min(keys.Length, _keys.Length));
-                    //_keys = keys;
                     Refresh();
-                    //OnOctavesChanged(EventArgs.Empty);
                 }
             }
         }
@@ -717,7 +713,7 @@ namespace M
         int _HitTest(int x, int y)
         {
             var result = -1;
-            var whiteKeyCount = 7 * _octaves;
+            var whiteKeyCount = 7 * (_octaves -1);
             if (Orientation.Horizontal == Orientation)
             {
                 var wkw = Width / whiteKeyCount;
